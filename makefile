@@ -2,12 +2,12 @@ all : ex2.out
 
 some: clean Server.out Client.out 
 
-Server.out: Server.o input.o ex2.o Knn.o Knn_subClasses.o Distances.o
-	g++ -o Server.out Server.o input.o ex2.o Knn.o Knn_subClasses.o Distances.o -g -std=c++11
+Server.out: Server.o input.o ex2.o Knn.o Knn_subClasses.o Distances.o HndaleClient.o
+	g++ -o Server.out Server.o input.o ex2.o Knn.o Knn_subClasses.o Distances.o HndaleClient.o -g -std=c++11
 
 
 Server.o:
-	g++ -c Server.cpp input.cpp ex2.h -std=c++11
+	g++ -c Server.cpp input.cpp ex2.h HndaleClient.h -std=c++11
 
 Client.out: Client.o input.o
 	g++ -o Client.out Client.o input.o -g -std=c++11
@@ -33,6 +33,10 @@ Knn.o : Knn.cpp Knn.h
 
 Knn_subClasses.o : Knn_subClasses.cpp Knn_subClasses.h Knn.h
 	g++ -c Knn_subClasses.cpp Knn_subClasses.h Knn.h -std=c++11
+
+HndaleClient.o: Knn.cpp Knn_subClasses.cpp ex2.cpp
+	g++ -c HndaleClient.cpp Knn_subClasses.h Knn.h ex2.h -std=c++11
+
 
 clean :
 	rm -f *.o *.gch *.out

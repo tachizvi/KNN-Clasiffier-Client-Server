@@ -49,19 +49,6 @@ int main(int argc, char const *argv[])
     }
     while (1)
     {
-        char data_addr[4096];
-        memset(data_addr, 0, 4096); /// setting the "buffer" to 0's
-        cin.getline(data_addr, 4096); /// Recives an input from the user and copies it to the buffer
-        int data_len = strlen(data_addr);
-        // Sending a message to the server
-        int sent_bytes = send(sock, data_addr, data_len,
-                              0);
-        if (sent_bytes <
-            0)
-        {
-            cout << "Error while sending the message, please try again:" << endl;
-            continue;
-        }
         char buffer[4096];
         int expected_data_len = sizeof(buffer);
         memset(buffer, 0, expected_data_len); // setting the buffer to 0's
@@ -86,8 +73,23 @@ int main(int argc, char const *argv[])
             {
                 break;
             }
+            cout << read_bytes << endl;
             cout << buffer << endl; // prints message recived from the server
         }
+        char data_addr[4096];
+        memset(data_addr, 0, 4096); /// setting the "buffer" to 0's
+        cin.getline(data_addr, 4096); /// Recives an input from the user and copies it to the buffer
+        int data_len = strlen(data_addr);
+        // Sending a message to the server
+        int sent_bytes = send(sock, data_addr, data_len,
+                              0);
+        if (sent_bytes <
+            0)
+        {
+            cout << "Error while sending the message, please try again:" << endl;
+            continue;
+        }
+        
     }
     cout << "Closing" << endl;
     close(sock);

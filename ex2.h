@@ -51,3 +51,7 @@ string Knn_classify(int size_of_vector, multimap<vector<double>,string> data, ve
 bool assign_strings_to_doubles(vector<string> &str, vector<double> &doub, int size);
 
 bool assign_strings_to_doubles_with_size(vector<string> &str, vector<double> &doub, int size, int vect_size);
+
+void read_and_map_unclassified(vector<vector<double>> *unclassified_data, string file_name);
+
+pair<int,string> split_k_and_distance(string str, string delimiter) ;

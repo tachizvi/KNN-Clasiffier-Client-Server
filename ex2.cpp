@@ -15,7 +15,7 @@ using namespace std;
 
 // This map is mapping each of the distance-calculating
 // algorithms to a number (to use a switch-case later on) 
-map<string,int> Algorithms
+static map<string,int> Algorithms
 {
     {"AUC",1},
     {"MAN",2},
@@ -54,6 +54,87 @@ pair<vector<double>,string> split_string(string str, string delimiter) {
             exit(1);
         };
     return {v,temp};
+}
+
+/// @brief splits a string to k and a metric
+/// @param str the string to split
+/// @param delimiter 
+/// @return a pair of a integer and a string {k, metric}
+pair<int,string> split_k_and_distance(string str, string delimiter) {
+    bool valid_k = true;
+    int start = 0;
+    int end = str.find(delimiter);
+    string distacne_metric, k_str;
+    int k;
+    k_str = str.substr(start, end - start);
+    start = end + delimiter.size();
+    end = str.find(delimiter);
+    distacne_metric = str.substr(start, str.length() - 1);
+    if (is_a_number(k_str)) {
+        k = stod(k_str);
+    } else {
+        valid_k = false;
+        cout << "invalid value for K" << endl;
+    }
+    if (k < 1) {
+        valid_k = false;
+        cout << "invalid value for K" << endl;
+    }
+    if (!strcmp(distacne_metric.c_str(), "AUC") || !strcmp(distacne_metric.c_str(), "MIN")|| !strcmp(distacne_metric.c_str(), "MAN") || !strcmp(distacne_metric.c_str(), "CHB") || !strcmp(distacne_metric.c_str(), "CAN")) {
+        if (valid_k) {
+        return {k, distacne_metric};
+        }
+        return {0," "};
+    } else {
+        cout << distacne_metric << endl;
+        cout << "invalid value for metric" << endl;
+        return {0, " "};
+    }
+    
+}
+
+
+/// @brief splits an unclassified file into a vector of doubles
+/// @param str - a line
+/// @param delimiter - the split delimiter
+/// @return a vector of doubles that contains the line's numbers.
+vector<double> split_string_doubles(string str, string delimiter) {
+    cout << "I'm here" << endl;
+    int start = 0;
+    int end = str.find(delimiter);
+    string temp;
+    vector<double> v;
+    while (end != -1) { // loops until we don't have any more instances of the delimiter in string
+        temp = str.substr(start, end - start);
+        if (!is_a_number(temp) || temp.empty()) {
+            cout << temp << endl;
+        }
+        v.push_back(stod(temp));
+        start = end + delimiter.size();
+        end = str.find(delimiter, start);
+    }
+    temp = str.substr(start, end);
+        if (!is_a_number(temp) || temp.empty()) {
+            cout << temp << endl;
+        };
+    v.push_back(stod(temp));
+    return v;
+}
+
+
+/// @brief Opens and reads a given csv file and inserts the data to a given vector
+/// @param The destination map the method writes to
+/// @param file_name The name of the file it needs to read
+void read_and_map_unclassified(vector<vector<double>> *unclassified_data, string file_name) {
+    ifstream fin; // initialize a stream
+    string line;
+    fin.open(file_name); // Open an existing file
+    // while there still lines to read, continue reading
+     while(getline(fin, line)){  
+    // inserts the pair returned from the "split_string" function to the map 
+            unclassified_data->push_back(split_string_doubles(line,","));
+            print_vector(unclassified_data->back());
+            }
 }
 
 /// @brief Opens and reads a given csv file and inserts the data to a given map

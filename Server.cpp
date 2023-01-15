@@ -8,6 +8,7 @@
 #include <string.h>
 #include "input.h"
 #include "ex2.h"
+#include "HndaleClient.h"
 
 using namespace std;
 
@@ -127,6 +128,7 @@ int main(int argc, char const *argv[])
         int clientOn = 1;
         while (clientOn)
         {
+            menu(client_sock);
             char buffer[4096];
             int expected_data_len = sizeof(buffer);
             memset(buffer, 0, expected_data_len); // Setting the buffer to 0's
@@ -143,7 +145,7 @@ int main(int argc, char const *argv[])
             }
             else
             {
-                if (!strcmp(buffer, "-1")) // If the message we recived is "-1". The client wants to close the connection
+               /*  if (!strcmp(buffer, "-1")) // If the message we recived is "-1". The client wants to close the connection
                 {
                     result = "Bye"; // We shall return "Bye" to the client so it'll close it's connection
                     clientOn = 0;
@@ -170,7 +172,9 @@ int main(int argc, char const *argv[])
                     goto send_to_client;
                 }
                 result = Knn_classify(data.begin()->first.size(), data, user_vector, place_and_distance.second, place_and_distance.first);
-                strcpy(buffer, result.c_str());
+                strcpy(buffer, result.c_str()); */
+/*                 menu(client_sock);
+ */
             }
 
         // This label it used to send back a message to the client, we shall get here once we know what to send back
