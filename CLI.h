@@ -1,3 +1,6 @@
+#pragma once
+#ifndef CLI_H
+#define CLI_H
 #include "DefaultIO.h"
 #include <map>
 #include <stdio.h>
@@ -14,7 +17,7 @@ private:
     int *k;
     string *distance_function;
     vector<string> *results;
-    Command commands[5];
+    Command commands[4];
     DefaultIO dio;
 
 public:
@@ -28,7 +31,7 @@ class CLI_Client {
     private:
     int *Socket;
     DefaultIO dio;
-    Command commands[5];
+    Command commands[4];
 
     public:
     CLI_Client(int *socket) ;
@@ -36,3 +39,5 @@ class CLI_Client {
     bool exectue(int user_pick);
     void read_menu();
 };
+
+#endif

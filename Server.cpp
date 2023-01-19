@@ -91,7 +91,7 @@ int main(int argc, char const *argv[])
 
     // using the function from the last exercise in order to
     // read the given file and map the data in it
-    read_and_map(&data, file_name);
+    //read_and_map(&data, file_name);
 
     const int server_port = stoi(argv[2]);
     int sock = socket(AF_INET, SOCK_STREAM, 0); // Creating a socket to bind to
@@ -126,11 +126,12 @@ int main(int argc, char const *argv[])
             perror("error accepting client");
             continue;
         }
+        cout << "ok1" << endl;
         CLI_Server cli_server = CLI_Server(&client_sock);
+        cout << "ok2" << endl;
         int clientOn = 1;
         while (clientOn)
         {
-
            cli_server.print_menu();
            cli_server.execute();
         

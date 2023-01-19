@@ -1,8 +1,11 @@
-#include "DefaultIO.cpp"
+#include "DefaultIO.h"
 #include <map>
 #include <stdio.h>
 #include <vector>
 #include "ex2.h"
+#include "Command.h"
+
+using namespace std;
 
 static map<string, int> Algorithms{
     {"AUC", 1},
@@ -11,37 +14,23 @@ static map<string, int> Algorithms{
     {"CAN", 4},
     {"MIN", 5}};
 
-using namespace std;
-class Command
-{
-protected:
-    string dsecription;
-    DefaultIO dio;
+Command::Command(){
+    return;
+}
 
-public:
-    virtual void exectue() = 0;
-    string get_description() {
-        return this->dsecription;
-    }
-};
+void Command::exectue(){}
 
-class Command_Upload : public Command
-{
-private:
-    multimap<vector<double>, string> *data;
-    vector<vector<double>> *unclassified_data;
-
-public:
-    Command_Upload(int *socket, multimap<vector<double>, string> *data, vector<vector<double>> *unclassified_data)
-    {
-        this->dsecription = "1. upload an unclassified csv data file";
+string Command::get_description() {
+    return this->dsecription;
+}
+Command_Upload::Command_Upload(int *socket, multimap<vector<double>, string> *data, vector<vector<double>> *unclassified_data) {
+    this->dsecription = "1. upload an unclassified csv data file";
         this->dio = SocketIO(socket);
         this->data = data;
         this->unclassified_data = unclassified_data;
-    }
-    void execute()
-    {
-        multimap<vector<double>, string> data_temp;
+}
+void Command_Upload::execute() {
+     multimap<vector<double>, string> data_temp;
         vector<vector<double>> unclassified_data_temp;
         string classified, unclassified;
         string return_massage = "Plaese upload your local train CSV file.";
@@ -66,27 +55,17 @@ public:
         *data = data_temp;
         *unclassified_data = unclassified_data_temp;
         return;
-    }
-};
+}
 
-class Command_settings : public Command
-{
-private:
-    int *k;
-    string *distance_function;
+Command_settings::Command_settings(int *socket, int *k, string *distance_function) {
+    this->dsecription = "2. algorithm settings";
+    this->dio = SocketIO(socket);
+    this->k = k;
+    this->distance_function = distance_function;
+}
 
-public:
-    Command_settings(int *socket, int *k, string *distance_function)
-    {
-        this->dsecription = "2. algorithm settings";
-        this->dio = SocketIO(socket);
-        this->k = k;
-        this->distance_function = distance_function;
-    }
-
-    void execute()
-    {
-        stringstream ss;
+void Command_settings::execute() {
+      stringstream ss;
         stringstream ss_error;
         ss << "The current KNN parameters are: K = " << *k << ", distance metric = " << *distance_function << endl;
         string massage = ss.str();
@@ -124,21 +103,9 @@ public:
         *k = temp.first;
         *distance_function = temp.second;
         return;
-    }
-};
+}
 
-class Command_classify : public Command
-{
-private:
-    int *k;
-    string *distance;
-    multimap<vector<double>, string> *data;
-    vector<vector<double>> *unclassified_data;
-    vector<string> *results;
-
-public:
-    Command_classify(int *socket, int *k, string *distance, multimap<vector<double>, string> *data, vector<vector<double>> *unclassified_data, vector<string> *results)
-    {
+Command_classify::Command_classify(int *socket, int *k, string *distance, multimap<vector<double>, string> *data, vector<vector<double>> *unclassified_data, vector<string> *results){
         this->dsecription = "3. classify data";
         this->dio = SocketIO(socket);
         this->k = k;
@@ -146,10 +113,9 @@ public:
         this->data = data;
         this->unclassified_data = unclassified_data;
         this->results = results;
-    }
+}
 
-    void execute()
-    {
+void Command_classify::execute() {
         if (this->data->empty()) {
             this->dio.write("classifying data complete");
         }
@@ -159,26 +125,17 @@ public:
         }
         this->dio.write("please upload data");
         return;
-    }
-};
+}
 
-class Command_display : public Command
-{
-private:
-    vector<string> *results;
-    multimap<vector<double>, string> *data;
-
-public:
-    Command_display(int *socket, vector<string> *results, multimap<vector<double>, string> *data)
-    {
-        this->dsecription = "4. display results";
+Command_display::Command_display(int *socket, vector<string> *results, multimap<vector<double>, string> *data) {
+ this->dsecription = "4. display results";
         this->dio = SocketIO(socket);
         this->results = results;
         this->data = data;
-    }
-    void execute()
-    {
-        if (this->data->empty()) {
+}
+
+void Command_display::execute(){
+if (this->data->empty()) {
             this->dio.write("please upload data");
             this->dio.read();
             return;
@@ -200,15 +157,13 @@ public:
         }
         this->dio.write("Done.");
         this->dio.read();
-    }
-};
+}
 
-class Command_client_Upload : public Command {
+Command_client_Upload::Command_client_Upload(int *socket) {
+    this->dio = SocketIO(socket);
+}
 
-    Command_client_Upload(int *socket) {
-        this->dio = SocketIO(socket);
-    }
-    void execute() {
+void Command_client_Upload::execute(){
         string* massage_recieved;
         cout << this->dio.read() << endl;
         string path, upath;
@@ -217,14 +172,14 @@ class Command_client_Upload : public Command {
         cout << this->dio.read() << endl;
         cin >> upath;
         this->dio.write(upath);
-    }
-};
+}
 
-class Command_Client_Settings : public Command {
-    Command_Client_Settings(int *socket) {
+
+
+    Command_Client_Settings :: Command_Client_Settings(int *socket) {
         this->dio = SocketIO(socket);
     }
-    void execute() {
+    void Command_Client_Settings :: execute() {
         cout << this->dio.read() << endl;
         string massage, recieved_massage;
         cin >> massage;
@@ -234,24 +189,24 @@ class Command_Client_Settings : public Command {
             cout << recieved_massage << endl;
         }
     }
-};
 
-class Command_Client_Classify : public Command {
-    Command_Client_Classify(int *socket) {
+
+
+    Command_Client_Classify::Command_Client_Classify(int *socket) {
         this->dio = SocketIO(socket);
     }
 
-    void execute() {
+    void Command_Client_Classify::execute() {
         cout << this->dio.read() << endl;
     }
-};
 
-class Command_Client_Display : public Command {
-    Command_Client_Display(int *socket) {
+
+
+    Command_Client_Display::Command_Client_Display(int *socket) {
         this->dio = SocketIO(socket);
     }
     
-    void execute() {
+    void Command_Client_Display::execute() {
         string massage_recieved;
         massage_recieved = this->dio.read();
             if(strcmp(massage_recieved.c_str(), "please upload data") == 0 ||strcmp(massage_recieved.c_str(), "please classify the data") == 0){
@@ -268,4 +223,3 @@ class Command_Client_Display : public Command {
             }
         }
     }
-};

@@ -8,7 +8,7 @@ Server.out:
 
 
 Client.out: 
-	g++ -o Client.out Client.cpp input.cpp CLI.cpp DefaultIO.cpp Command.cpp -g -std=c++11
+	g++ -o Client.out Client.cpp input.cpp ex2.cpp Knn.cpp Knn_subClasses.cpp Distances.cpp HndaleClient.cpp CLI.cpp DefaultIO.cpp Command.cpp -g -std=c++11
 
 clean :
 	rm -f *.o *.gch *.out
