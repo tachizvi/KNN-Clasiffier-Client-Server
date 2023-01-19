@@ -148,7 +148,6 @@ void *handle_client(void *cs)
         }
         else
         {
-            std::cout << " handling your string\n";
             if (!strcmp(buffer, "-1")) // If the message we recived is "-1". The client wants to close the connection
             {
                 result = "Bye"; // We shall return "Bye" to the client so it'll close it's connection
@@ -210,7 +209,6 @@ int main(int argc, char const *argv[])
     while (1)
     {
         int sock = socket(AF_INET, SOCK_STREAM, 0); // Creating a socket to bind to
-        std::cout << sock << endl;
         if (sock < 0)
         {
             perror("error creating socket");
