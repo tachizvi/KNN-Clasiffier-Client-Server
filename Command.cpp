@@ -20,7 +20,8 @@ protected:
 
 public:
     virtual void exectue() = 0;
-    string get_description() {
+    string get_description()
+    {
         return this->dsecription;
     }
 };
@@ -150,7 +151,8 @@ public:
 
     void execute()
     {
-        if (this->data->empty()) {
+        if (this->data->empty())
+        {
             this->dio.write("classifying data complete");
         }
         for (vector<double> vect : *unclassified_data)
@@ -178,12 +180,14 @@ public:
     }
     void execute()
     {
-        if (this->data->empty()) {
+        if (this->data->empty())
+        {
             this->dio.write("please upload data");
             this->dio.read();
             return;
         }
-        if (this->results->empty()) {
+        if (this->results->empty())
+        {
             this->dio.write("please classify the data");
             this->dio.read();
         }
@@ -203,13 +207,67 @@ public:
     }
 };
 
-class Command_client_Upload : public Command {
+class Command_Download : public Command
+{
 
-    Command_client_Upload(int *socket) {
+private:
+    vector<string> *results;
+    multimap<vector<double>, string> *data;
+    char *client_file_path = "0";
+
+public:
+    Command_Download(int *socket, vector<string> *results, multimap<vector<double>, string> *data)
+    {
+        this->dsecription = "4. display results";
+        this->dio = SocketIO(socket);
+        this->results = results;
+        this->data = data;
+    }
+    void execute()
+    {
+        if (this->data->empty())
+        {
+            this->dio.write("please upload data");
+            this->dio.read();
+            return;
+        }
+        if (this->results->empty())
+        {
+            this->dio.write("please classify the data");
+            this->dio.read();
+        }
+        if (strcmp(this->client_file_path, "0"))
+        {
+            this->dio.write("please specify the file path:");
+            strcpy(client_file_path, this->dio.read().c_str());
+        }
+
+        int i = 1;
+        for (string s : *results)
+        {
+            stringstream ss;
+            string massage;
+            ss << i << " " << s;
+            massage = ss.str();
+            this->dio.write(massage);
+            this->dio.read();
+            i++;
+        }
+        this->dio.write("Done.");
+        this->dio.read();
+    }
+};
+
+class Command_client_Upload : public Command
+{
+
+    Command_client_Upload(int *socket)
+    {
         this->dio = SocketIO(socket);
     }
-    void execute() {
-        string* massage_recieved;
+    void execute()
+    {
+        string *massage_recieved;
         cout << this->dio.read() << endl;
         string path, upath;
         cin >> path;
@@ -220,52 +278,113 @@ class Command_client_Upload : public Command {
     }
 };
 
-class Command_Client_Settings : public Command {
-    Command_Client_Settings(int *socket) {
+class Command_Client_Settings : public Command
+{
+    Command_Client_Settings(int *socket)
+    {
         this->dio = SocketIO(socket);
     }
-    void execute() {
+    void execute()
+    {
         cout << this->dio.read() << endl;
         string massage, recieved_massage;
         cin >> massage;
         this->dio.write(massage);
         recieved_massage = this->dio.read();
-        if(recieved_massage.length() > 1) {
+        if (recieved_massage.length() > 1)
+        {
             cout << recieved_massage << endl;
         }
     }
 };
 
-class Command_Client_Classify : public Command {
-    Command_Client_Classify(int *socket) {
+class Command_Client_Classify : public Command
+{
+    Command_Client_Classify(int *socket)
+    {
         this->dio = SocketIO(socket);
     }
 
-    void execute() {
+    void execute()
+    {
         cout << this->dio.read() << endl;
     }
 };
 
-class Command_Client_Display : public Command {
-    Command_Client_Display(int *socket) {
+class Command_Client_Display : public Command
+{
+    Command_Client_Display(int *socket)
+    {
         this->dio = SocketIO(socket);
     }
-    
-    void execute() {
+
+    void execute()
+    {
         string massage_recieved;
         massage_recieved = this->dio.read();
-            if(strcmp(massage_recieved.c_str(), "please upload data") == 0 ||strcmp(massage_recieved.c_str(), "please classify the data") == 0){
-                cout << massage_recieved << endl;
-                this->dio.write("OK");
-                return;
-            }
-        while(true) {
+        if (strcmp(massage_recieved.c_str(), "please upload data") == 0 || strcmp(massage_recieved.c_str(), "please classify the data") == 0)
+        {
+            cout << massage_recieved << endl;
+            this->dio.write("OK");
+            return;
+        }
+        while (true)
+        {
             massage_recieved = this->dio.read();
             cout << massage_recieved << endl;
             this->dio.write("OK");
-            if(strcmp(massage_recieved.c_str(), "Done.") == 0) {
+            if (strcmp(massage_recieved.c_str(), "Done.") == 0)
+            {
                 return;
             }
         }
+    }
+};
+
+class Command_Client_Download : public Command
+{
+private:
+    string file_path;
+    int* socket;
+
+public:
+    Command_Client_Download(int *socket)
+    {
+        this->dio = SocketIO(socket);
+        this->socket = socket;
+    }
+    void execute()
+    {
+        string massage_recieved;
+        massage_recieved = this->dio.read();
+        if (strcmp(massage_recieved.c_str(), "please upload data") == 0 || strcmp(massage_recieved.c_str(), "please classify the data") == 0)
+        {
+            cout << massage_recieved << endl;
+            this->dio.write("OK");
+            return;
+        }
+        if (strcmp(massage_recieved.c_str(), "please specify the file path:") == 0)
+        {
+            cout << massage_recieved << endl;
+            cin >> file_path;
+            this->dio.write(file_path);
+            pthread_t thread_o;
+            pthread_create(&thread_o, NULL, write_to_file,(void*) (file_path.c_str() ,socket));
+            return;
+        }
+
+        while (true)
+        {
+            massage_recieved = this->dio.read();
+            cout << massage_recieved << endl;
+            this->dio.write("OK");
+            if (strcmp(massage_recieved.c_str(), "Done.") == 0)
+            {
+                return;
+            }
+        }
+    }
+    void write_to_file(void* args){
+
     }
 };
