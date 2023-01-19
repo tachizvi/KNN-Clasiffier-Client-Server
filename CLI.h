@@ -17,7 +17,7 @@ private:
     int *k;
     string *distance_function;
     vector<string> *results;
-    Command commands[4];
+    Command *commands[4];
     SocketIO dio;
 
 public:
@@ -27,14 +27,15 @@ public:
     void print_menu();
 };
 
-class CLI_Client {
-    private:
+class CLI_Client
+{
+private:
     int *Socket;
     SocketIO dio;
-    Command commands[4];
+    Command *commands[4];
 
-    public:
-    CLI_Client(int *socket) ;
+public:
+    CLI_Client(int *socket);
 
     bool exectue(int user_pick);
     void read_menu();

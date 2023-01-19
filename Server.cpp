@@ -29,7 +29,6 @@ pair<int, int> is_valid(string input, int *k, vector<string> &vect)
     }
 
     string end = vect[vect.size() - 1];
-    cout << end << endl;
     string dis_func = vect[vect.size() - 2];
 
     // Checking if the last element in the input is a nubmer, if so we'll convert it to an int, 
@@ -126,14 +125,17 @@ int main(int argc, char const *argv[])
             perror("error accepting client");
             continue;
         }
-        cout << "ok1" << endl;
+        cout<<"Bfore" <<endl;
         CLI_Server cli_server = CLI_Server(&client_sock);
-        cout << "ok2" << endl;
+        
         int clientOn = 1;
         while (clientOn)
         {
+            cout<< "BFOR" << endl;
            cli_server.print_menu();
+           cout << "LETS FUCKING GO !!!! " << endl;
            cli_server.execute();
+           cout << "Done" << endl;
            
         
    /*          int expected_data_len = sizeof(buffer);

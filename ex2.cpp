@@ -103,7 +103,6 @@ pair<int,string> split_k_and_distance(string str, string delimiter) {
 /// @param delimiter - the split delimiter
 /// @return a vector of doubles that contains the line's numbers.
 vector<double> split_string_doubles(string str, string delimiter) {
-    cout << "I'm here" << endl;
     int start = 0;
     int end = str.find(delimiter);
     string temp;
@@ -111,7 +110,6 @@ vector<double> split_string_doubles(string str, string delimiter) {
     while (end != -1) { // loops until we don't have any more instances of the delimiter in string
         temp = str.substr(start, end - start);
         if (!is_a_number(temp) || temp.empty()) {
-            cout << temp << endl;
         }
         v.push_back(stod(temp));
         start = end + delimiter.size();
@@ -119,7 +117,6 @@ vector<double> split_string_doubles(string str, string delimiter) {
     }
     temp = str.substr(start, end);
         if (!is_a_number(temp) || temp.empty()) {
-            cout << temp << endl;
         };
     v.push_back(stod(temp));
     return v;
