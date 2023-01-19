@@ -9,6 +9,8 @@
 #include "Knn_subClasses.h"
 
 
+
+
 // Here i took one of the functions from our Ex1 repository and changed
 // it so it'll fit my needs 
 

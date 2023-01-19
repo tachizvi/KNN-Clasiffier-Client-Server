@@ -12,10 +12,7 @@ using namespace std;
 
 
 
-
-// This map is mapping each of the distance-calculating
-// algorithms to a number (to use a switch-case later on) 
-static map<string,int> Algorithms
+ static map<string,int> Algorithms
 {
     {"AUC",1},
     {"MAN",2},
@@ -23,6 +20,9 @@ static map<string,int> Algorithms
     {"CAN",4},
     {"MIN",5}
 };
+// This map is mapping each of the distance-calculating
+// algorithms to a number (to use a switch-case later on) 
+
 
 
 // Here i took one of the functions from our Ex1 repository and changed
@@ -74,7 +74,7 @@ pair<int,string> split_k_and_distance(string str, string delimiter) {
         k = stod(k_str);
     } else {
         valid_k = false;
-        cout << "invalid value for K" << endl;
+        
     }
     if (k < 1) {
         valid_k = false;
@@ -86,9 +86,13 @@ pair<int,string> split_k_and_distance(string str, string delimiter) {
         }
         return {0," "};
     } else {
-        cout << distacne_metric << endl;
+        if(valid_k) {
         cout << "invalid value for metric" << endl;
-        return {0, " "};
+        return {-1, " "};
+        } else {
+            return {-2, " "};
+        }
+
     }
     
 }

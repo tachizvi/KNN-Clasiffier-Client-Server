@@ -76,6 +76,7 @@ void upload_files(multimap<vector<double>,string> *data, vector<vector<double>> 
 
 void change_k_and_distance(int *k, string* distance_function, int client_sock) {
     stringstream ss;
+    stringstream ss_error;
     ss << "The current KNN parameters are: K = " << *k << ", distance metric = " << *distance_function << endl;
     string massage = ss.str();
     send_to_client(client_sock, massage);
@@ -86,6 +87,19 @@ void change_k_and_distance(int *k, string* distance_function, int client_sock) {
     } 
     temp = split_k_and_distance(user_input, " ");
     if(temp.first == 0) {
+        ss_error << "invalid value for K";
+        massage = ss_error.str();
+        send_to_client(client_sock, massage);
+        return;
+    } else if(temp.first == -1) {
+        ss_error << "invalid value for metric";
+        massage = ss_error.str();
+        send_to_client(client_sock, massage);
+        return;
+    } else if(temp.first == -2) {
+        ss_error << "invalid value for K\n" << "invalid value for metric";
+        massage = ss_error.str();
+        send_to_client(client_sock, massage);
         return;
     }
     *k = temp.first;
@@ -101,13 +115,18 @@ void classify_data(int k, string distance,  multimap<vector<double>,string> data
     return;
 }
 
-void display_results(vector<string> results) {
+void display_results(vector<string> results, int client_sock) {
+    
     int i = 1;
     for (string s: results) {
-        cout << i << "  " << s << endl;
+        stringstream ss;
+        string massage;
+        ss << i << " " << s;
+        massage = ss.str();
+        send_to_client(client_sock, massage);
         i++;
     }
-    cout << "Done." << endl;
+    send_to_client(client_sock, "Done.");
 }
 
 void menu(int client_socket) {
@@ -136,7 +155,7 @@ void menu(int client_socket) {
                 cout << "please classify the data" << endl;
                 continue;
             }
-            display_results(results);
+            display_results(results, client_socket);
         }
 
     }
