@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef DEFAULTIO_H
 #define DEFAULTIO_H
 #include <iostream>
@@ -9,7 +11,7 @@ class DefaultIO
 {
 public:
      string read();
-     virtual void write(string massage);
+      void write(string massage) ;
 };
 
 class SocketIO : public DefaultIO

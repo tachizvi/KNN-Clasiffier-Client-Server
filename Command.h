@@ -1,3 +1,7 @@
+#pragma once
+
+#ifndef COMMAND_H
+#define COMMAND_H
 #include "DefaultIO.h"
 #include <map>
 #include <stdio.h>
@@ -8,11 +12,13 @@ using namespace std;
 class Command
 {
 protected:
+    
     string dsecription;
     DefaultIO dio;
 
 public:
-    virtual void exectue();
+    Command();
+    void exectue() ;
     string get_description() ;
 };
 
@@ -90,3 +96,4 @@ class Command_Client_Display : public Command {
     
     void execute() ;
 };
+#endif

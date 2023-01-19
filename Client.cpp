@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <string.h>
 #include "input.h"
-#include "CLI.cpp"
+#include "CLI.h"
 
 using namespace std;
 

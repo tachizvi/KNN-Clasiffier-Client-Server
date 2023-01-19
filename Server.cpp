@@ -9,7 +9,7 @@
 #include "input.h"
 #include "ex2.h"
 #include "HndaleClient.h"
-#include "CLI.cpp"
+#include "CLI.h"
 
 using namespace std;
 
