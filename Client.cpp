@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <string.h>
 #include "input.h"
+#include "CLI.cpp"
 
 using namespace std;
 
@@ -31,7 +32,7 @@ int main(int argc, char const *argv[])
         perror("error creating socket");
     }
     struct sockaddr_in sin;
-    memset(
+    std::memset(
         &sin,
         0, sizeof(sin)); // Setting sin to 0's
     sin.sin_family = AF_INET;
@@ -47,11 +48,22 @@ int main(int argc, char const *argv[])
     {
         perror("error connecting to server");
     }
+    CLI_Client cli = CLI_Client(&sock);
     while (1)
     {
+        cli.read_menu();
+        int user_pick;
+        std::cin >> user_pick;
+        while(!cli.exectue(user_pick)) {
+            std::cin >> user_pick;
+        }
+        /* 
+
+
+
         char buffer[4096];
         int expected_data_len = sizeof(buffer);
-        memset(buffer, 0, expected_data_len); // setting the buffer to 0's
+        std::memset(buffer, 0, expected_data_len); // setting the buffer to 0's
         // recives the message sent back from the server and saves it to "buffer"
         int read_bytes = recv(sock, buffer, expected_data_len,
                               0);
@@ -77,8 +89,8 @@ int main(int argc, char const *argv[])
             cout << buffer << endl; // prints message recived from the server
         }
         char data_addr[4096];
-        memset(data_addr, 0, 4096); /// setting the "buffer" to 0's
-        cin.getline(data_addr, 4096); /// Recives an input from the user and copies it to the buffer
+        std::memset(data_addr, 0, 4096); /// setting the "buffer" to 0's
+        std::cin.getline(data_addr, 4096); /// Recives an input from the user and copies it to the buffer
         int data_len = strlen(data_addr);
         // Sending a message to the server
         int sent_bytes = send(sock, data_addr, data_len,
@@ -89,7 +101,7 @@ int main(int argc, char const *argv[])
             cout << "Error while sending the message, please try again:" << endl;
             continue;
         }
-        
+         */
     }
     cout << "Closing" << endl;
     close(sock);
