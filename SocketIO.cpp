@@ -7,13 +7,12 @@
 #include <unistd.h>
 #include <string.h>
 #include <sstream>
-#include "DefaultIO.h"
+#include "SocketIO.h"
 
 using namespace std;
 
 
-    string DefaultIO::read(){return " ";}
-      void DefaultIO::write(string massage){}
+   
 
     SocketIO::SocketIO(int *socket) {
         this->socket = socket;

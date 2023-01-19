@@ -1,7 +1,7 @@
 #pragma once
 #ifndef CLI_H
 #define CLI_H
-#include "DefaultIO.h"
+#include "SocketIO.h"
 #include <map>
 #include <stdio.h>
 #include <vector>
@@ -18,7 +18,7 @@ private:
     string *distance_function;
     vector<string> *results;
     Command commands[4];
-    DefaultIO dio;
+    SocketIO dio;
 
 public:
     CLI_Server(int *socket);
@@ -30,7 +30,7 @@ public:
 class CLI_Client {
     private:
     int *Socket;
-    DefaultIO dio;
+    SocketIO dio;
     Command commands[4];
 
     public:

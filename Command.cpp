@@ -1,4 +1,4 @@
-#include "DefaultIO.h"
+#include "SocketIO.h"
 #include <map>
 #include <stdio.h>
 #include <vector>
@@ -18,18 +18,19 @@ Command::Command(){
     return;
 }
 
-void Command::exectue(){}
+//void Command::exectue(){}
 
 string Command::get_description() {
     return this->dsecription;
 }
-Command_Upload::Command_Upload(int *socket, multimap<vector<double>, string> *data, vector<vector<double>> *unclassified_data) {
+Command_Upload::Command_Upload(int *socket, multimap<vector<double>, string> *data, vector<vector<double>> *unclassified_data)  {
     this->dsecription = "1. upload an unclassified csv data file";
         this->dio = SocketIO(socket);
         this->data = data;
         this->unclassified_data = unclassified_data;
 }
 void Command_Upload::execute() {
+    cout << "BBB" << endl;
      multimap<vector<double>, string> data_temp;
         vector<vector<double>> unclassified_data_temp;
         string classified, unclassified;

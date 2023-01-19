@@ -134,6 +134,7 @@ int main(int argc, char const *argv[])
         {
            cli_server.print_menu();
            cli_server.execute();
+           
         
    /*          int expected_data_len = sizeof(buffer);
             memset(buffer, 0, expected_data_len); // Setting the buffer to 0's

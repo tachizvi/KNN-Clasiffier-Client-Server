@@ -2,7 +2,7 @@
 
 #ifndef COMMAND_H
 #define COMMAND_H
-#include "DefaultIO.h"
+#include "SocketIO.h"
 #include <map>
 #include <stdio.h>
 #include <vector>
@@ -14,12 +14,12 @@ class Command
 protected:
     
     string dsecription;
-    DefaultIO dio;
+    SocketIO dio;
 
 public:
     Command();
-    void exectue() ;
-    string get_description() ;
+    virtual void exectue() {return ;};
+     string get_description() ;
 };
 
 class Command_Upload : public Command
@@ -30,7 +30,7 @@ private:
 
 public:
     Command_Upload(int *socket, multimap<vector<double>, string> *data, vector<vector<double>> *unclassified_data);
-    void execute();
+    void execute() ;
 };
 
 class Command_settings : public Command
