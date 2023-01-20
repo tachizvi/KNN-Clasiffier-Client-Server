@@ -36,6 +36,9 @@ using namespace std;
 /// @param delimiter a delimiter to split with
 /// @return a pair in the form of (vector containing the values, a string representing the name)
 pair<vector<double>,string> split_string(string str, string delimiter) {
+    if (str.empty()) {
+        return {{0}, "ERROR"};
+    }
     int start = 0;
     int end = str.find(delimiter);
     string temp;
