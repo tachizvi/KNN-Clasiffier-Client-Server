@@ -7,6 +7,36 @@
 
 using namespace std;
 
+
+
+static void copy_vector(vector<vector<double>> src, vector<vector<double>> *dst) {
+    dst->clear();
+    vector<vector<double>>::iterator it;
+
+for ( vector<double> v : src) {
+    print_vector(v);
+    dst->push_back(v);
+}
+
+}
+
+static void copy_vector(multimap<vector<double>, string> src, multimap<vector<double>, string> *dst) {
+    dst->clear();
+    cout << "cleared" << endl;
+    multimap<vector<double>, string>::iterator it;
+
+for (it = src.begin(); it != src.end(); it++)
+{
+    vector<double> temp_vector = it ->first;
+    print_vector(temp_vector);
+    string temp_string = it ->second;
+    cout << temp_string << endl;
+   dst->insert({temp_vector, temp_string});
+   
+}
+
+}
+
 static map<string, int> Algorithms{
     {"AUC", 1},
     {"MAN", 2},
@@ -67,8 +97,10 @@ void Command_Upload::execute()
     this->dio.write("upload complete.");
         cout << "S" << endl;
 
-    *(this->data) = data_temp; // THE PROBLEM IS HERE
-    *(this->unclassified_data) = unclassified_data_temp; // FIX IT U FKING DIPSHIT
+    copy_vector(data_temp, this->data);
+    //*(this->data) = data_temp; // THE PROBLEM IS HERE
+    //(this->unclassified_data) = &unclassified_data_temp; // FIX IT U FKING DIPSHIT
+    copy_vector(unclassified_data_temp, this->unclassified_data);
     cout << "S" << endl;
     return;
 }
@@ -190,6 +222,7 @@ void Command_display::execute()
     }
     this->dio.write("Done.");
     this->dio.read();
+    return;
 }
 
 Command_client_Upload::Command_client_Upload(int *socket)
@@ -207,6 +240,8 @@ void Command_client_Upload::execute()
     cout << this->dio.read() << endl;
     cin >> upath;
     this->dio.write(upath);
+    this->dio.read();
+    return;
 }
 
 Command_Client_Settings ::Command_Client_Settings(int *socket)
@@ -224,6 +259,7 @@ void Command_Client_Settings ::execute()
     {
         cout << recieved_massage << endl;
     }
+    return;
 }
 
 Command_Client_Classify::Command_Client_Classify(int *socket)
@@ -234,6 +270,7 @@ Command_Client_Classify::Command_Client_Classify(int *socket)
 void Command_Client_Classify::execute()
 {
     cout << this->dio.read() << endl;
+    return;
 }
 
 Command_Client_Display::Command_Client_Display(int *socket)
