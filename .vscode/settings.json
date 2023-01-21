@@ -5,6 +5,7 @@
         "tuple": "cpp",
         "ostream": "cpp",
         "istream": "cpp",
-        "*.tcc": "cpp"
+        "*.tcc": "cpp",
+        "map": "cpp"
     }
 }

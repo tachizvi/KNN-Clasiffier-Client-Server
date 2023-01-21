@@ -54,6 +54,7 @@ int main(int argc, char const *argv[])
         cli.read_menu();
         int user_pick;
         std::cin >> user_pick;
+        
         cli.exectue(user_pick);
         /* 
 

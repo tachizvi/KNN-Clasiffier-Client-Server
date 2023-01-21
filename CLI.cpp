@@ -11,6 +11,9 @@ CLI_Server::CLI_Server(int *socket)
     cout << "A" << endl;
     this->socket = socket;
     (this->k) = new int(5);
+    this->data = new multimap<vector<double>, string>();
+    this->unclassified_data = new vector<vector<double>> ();
+    this->results = new vector<string>();
 
     this->distance_function = new string("AUC");
     this->commands[0] = (new Command_Upload(this->socket, this->data, this->unclassified_data));
@@ -29,14 +32,18 @@ void CLI_Server::execute()
     cout << (this->commands)[user_pick_s - 1]->get_description() << endl;
     (this->commands)[user_pick_s - 1]->execute();
     cout << " DONE" << endl;
+    this->dio.read();
 }
 void CLI_Server::print_menu()
 {
+    stringstream ss;
     for (int i = 0; i < 4; i++)
     {
-        this->dio.write(commands[i]->get_description());
-        this->dio.read();
+        ss << "\n" << commands[i]->get_description();
+        
     }
+    string message = ss.str();
+    this->dio.write(message);
     // this->dio.read();
 }
 
@@ -58,13 +65,10 @@ bool CLI_Client::exectue(int user_pick)
     }
     this->dio.write(to_string(user_pick));
     ((this->commands)[user_pick - 1])->execute();
+    this->dio.write("finished_execution");
     return true;
 }
 void CLI_Client::read_menu()
 {
-    for (int i = 0; i < 4; i++)
-    {
-        cout << this->dio.read() << endl;
-        this->dio.write("OK");
-    }
+    cout << this->dio.read() << endl;
 }
