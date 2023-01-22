@@ -7,34 +7,31 @@
 
 using namespace std;
 
-
-
-static void copy_vector(vector<vector<double>> src, vector<vector<double>> *dst) {
+static void copy_vector(vector<vector<double>> src, vector<vector<double>> *dst)
+{
     dst->clear();
     vector<vector<double>>::iterator it;
 
-for ( vector<double> v : src) {
-    print_vector(v);
-    dst->push_back(v);
+    for (vector<double> v : src)
+    {
+        print_vector(v);
+        dst->push_back(v);
+    }
 }
 
-}
-
-static void copy_vector(multimap<vector<double>, string> src, multimap<vector<double>, string> *dst) {
+static void copy_vector(multimap<vector<double>, string> src, multimap<vector<double>, string> *dst)
+{
     dst->clear();
-    cout << "cleared" << endl;
     multimap<vector<double>, string>::iterator it;
 
-for (it = src.begin(); it != src.end(); it++)
-{
-    vector<double> temp_vector = it ->first;
-    print_vector(temp_vector);
-    string temp_string = it ->second;
-    cout << temp_string << endl;
-   dst->insert({temp_vector, temp_string});
-   
-}
-
+    for (it = src.begin(); it != src.end(); it++)
+    {
+        vector<double> temp_vector = it->first;
+        print_vector(temp_vector);
+        string temp_string = it->second;
+        cout << temp_string << endl;
+        dst->insert({temp_vector, temp_string});
+    }
 }
 
 static map<string, int> Algorithms{
@@ -56,12 +53,13 @@ string Command::get_description()
     return this->dsecription;
 }
 
-bool Command::data_empty(){
-    cout << "HEY" << endl;
+bool Command::data_empty()
+{
     return (this->data)->empty();
 }
 
-bool Command::result_empty(){
+bool Command::result_empty()
+{
     return this->results->empty();
 }
 Command_Upload::Command_Upload(int *socket, multimap<vector<double>, string> *data, vector<vector<double>> *unclassified_data)
@@ -95,13 +93,11 @@ void Command_Upload::execute()
         return;
     }
     this->dio.write("upload complete.");
-        cout << "S" << endl;
 
     copy_vector(data_temp, this->data);
     //*(this->data) = data_temp; // THE PROBLEM IS HERE
     //(this->unclassified_data) = &unclassified_data_temp; // FIX IT U FKING DIPSHIT
     copy_vector(unclassified_data_temp, this->unclassified_data);
-    cout << "S" << endl;
     return;
 }
 
@@ -121,11 +117,15 @@ void Command_settings::execute()
     string massage = ss.str();
     this->dio.write(massage);
     string user_input = this->dio.read();
+
     pair<int, string> temp;
-    if (user_input.empty())
+    cout << "the input is:" << user_input << endl;
+    if (user_input.length() == 0)
     {
+        this->dio.write("ignore");
         return;
     }
+    // cout << this->dio.read() << endl;
     temp = split_k_and_distance(user_input, " ");
     if (temp.first == 0)
     {
@@ -190,7 +190,6 @@ Command_display::Command_display(int *socket, vector<string> *results, multimap<
 
 void Command_display::execute()
 {
-    cout << " Nah"<< endl;
 
     if (data_empty())
     {
@@ -198,7 +197,6 @@ void Command_display::execute()
         this->dio.read();
         return;
     }
-        cout << " Nah"<< endl;
 
     if (result_empty())
     {
@@ -208,12 +206,10 @@ void Command_display::execute()
     int i = 1;
     for (string s : *results)
     {
-            cout << " Nah"<< endl;
 
         stringstream ss;
         string massage;
         ss << i << " " << s;
-            cout << " Nah"<< endl;
 
         massage = ss.str();
         this->dio.write(massage);
@@ -251,10 +247,19 @@ Command_Client_Settings ::Command_Client_Settings(int *socket)
 void Command_Client_Settings ::execute()
 {
     cout << this->dio.read() << endl;
-    string massage, recieved_massage;
-    cin >> massage;
+    cin.ignore();
+    string recieved_massage, massage;
+    getline(std::cin, massage);
+
+    //  cout << massage << endl;
     this->dio.write(massage);
     recieved_massage = this->dio.read();
+    if (strcmp(recieved_massage.c_str(), "ignore") == 0)
+    {
+        cout << " ignoring" << endl;
+        return;
+    }
+
     if (recieved_massage.length() > 1)
     {
         cout << recieved_massage << endl;

@@ -65,14 +65,17 @@ pair<vector<double>,string> split_string(string str, string delimiter) {
 /// @return a pair of a integer and a string {k, metric}
 pair<int,string> split_k_and_distance(string str, string delimiter) {
     bool valid_k = true;
+    cout << str << endl;
     int start = 0;
     int end = str.find(delimiter);
     string distacne_metric, k_str;
     int k;
     k_str = str.substr(start, end - start);
-    start = end + delimiter.size();
-    end = str.find(delimiter);
+    cout << k_str << endl;
+    start = end + 1; // delimiter.size();
+    //end = str.find(delimiter);
     distacne_metric = str.substr(start, str.length() - 1);
+    cout << distacne_metric << endl;
     if (is_a_number(k_str)) {
         k = stod(k_str);
     } else {

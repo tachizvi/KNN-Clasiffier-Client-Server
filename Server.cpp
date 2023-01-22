@@ -131,11 +131,8 @@ int main(int argc, char const *argv[])
         int clientOn = 1;
         while (clientOn)
         {
-            cout<< "BFOR" << endl;
            cli_server.print_menu();
-           cout << "LETS FUCKING GO !!!! " << endl;
            cli_server.execute();
-           cout << "Done" << endl;
            
         
    /*          int expected_data_len = sizeof(buffer);
