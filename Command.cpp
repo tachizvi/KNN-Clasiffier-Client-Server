@@ -4,8 +4,17 @@
 #include <vector>
 #include "ex2.h"
 #include "Command.h"
+#include <iostream>
+#include <fstream>
 
 using namespace std;
+
+void *downloader(void *args)
+{
+    Command_Client_Download *cld = ((Command_Client_Download *)(args));
+    cld->download_data();
+    return NULL;
+}
 
 static void copy_vector(vector<vector<double>> src, vector<vector<double>> *dst)
 {
@@ -29,7 +38,7 @@ static void copy_vector(multimap<vector<double>, string> src, multimap<vector<do
         vector<double> temp_vector = it->first;
         print_vector(temp_vector);
         string temp_string = it->second;
-        cout << temp_string << endl;
+
         dst->insert({temp_vector, temp_string});
     }
 }
@@ -74,8 +83,8 @@ void Command_Upload::execute()
     multimap<vector<double>, string> data_temp;
     vector<vector<double>> unclassified_data_temp;
     string classified, unclassified;
-    string return_massage = "Please upload your local train CSV file.";
-    this->dio.write(return_massage);
+    string return_message = "Please upload your local train CSV file.";
+    this->dio.write(return_message);
     classified = this->dio.read();
     read_and_map(&data_temp, classified);
     if (data_temp.size() == 0)
@@ -83,8 +92,8 @@ void Command_Upload::execute()
         this->dio.write("invalid input");
         return;
     }
-    return_massage = "Upload complete.\nPlaese upload your local test CSV file.";
-    this->dio.write(return_massage);
+    return_message = "Upload complete.\nPlease upload your local test CSV file.";
+    this->dio.write(return_message);
     unclassified = this->dio.read();
     read_and_map_unclassified(&unclassified_data_temp, unclassified);
     if (unclassified_data_temp.size() == 0)
@@ -95,6 +104,7 @@ void Command_Upload::execute()
     this->dio.write("upload complete.");
 
     copy_vector(data_temp, this->data);
+
     //*(this->data) = data_temp; // THE PROBLEM IS HERE
     //(this->unclassified_data) = &unclassified_data_temp; // FIX IT U FKING DIPSHIT
     copy_vector(unclassified_data_temp, this->unclassified_data);
@@ -114,39 +124,39 @@ void Command_settings::execute()
     stringstream ss;
     stringstream ss_error;
     ss << "The current KNN parameters are: K = " << *k << ", distance metric = " << *distance_function << endl;
-    string massage = ss.str();
-    this->dio.write(massage);
+    string message = ss.str();
+    this->dio.write(message);
     string user_input = this->dio.read();
 
     pair<int, string> temp;
-    cout << "the input is:" << user_input << endl;
+
     if (user_input.length() == 0)
     {
         this->dio.write("ignore");
         return;
     }
-    // cout << this->dio.read() << endl;
+    //
     temp = split_k_and_distance(user_input, " ");
     if (temp.first == 0)
     {
         ss_error << "invalid value for K";
-        massage = ss_error.str();
-        this->dio.write(massage);
+        message = ss_error.str();
+        this->dio.write(message);
         return;
     }
     else if (temp.first == -1)
     {
         ss_error << "invalid value for metric";
-        massage = ss_error.str();
-        this->dio.write(massage);
+        message = ss_error.str();
+        this->dio.write(message);
         return;
     }
     else if (temp.first == -2)
     {
         ss_error << "invalid value for K\n"
                  << "invalid value for metric";
-        massage = ss_error.str();
-        this->dio.write(massage);
+        message = ss_error.str();
+        this->dio.write(message);
         return;
     }
     this->dio.write(" ");
@@ -168,15 +178,18 @@ Command_classify::Command_classify(int *socket, int *k, string *distance, multim
 
 void Command_classify::execute()
 {
+
     if (data_empty())
     {
+        this->dio.write("please upload data");
         this->dio.write("classifying data complete");
     }
     for (vector<double> vect : *unclassified_data)
     {
         results->push_back(Knn_classify((data)->begin()->first.size(), *data, vect, Algorithms[*distance], *k));
     }
-    this->dio.write("please upload data");
+    this->dio.write("classifying data complete");
+
     return;
 }
 
@@ -190,7 +203,49 @@ Command_display::Command_display(int *socket, vector<string> *results, multimap<
 
 void Command_display::execute()
 {
+    if (this->data->size() == 0)
+    {
+        this->dio.write("please upload data");
+        this->dio.read();
+        return;
+    }
 
+    if (this->results->size() == 0)
+    {
+        this->dio.write("please classify the data");
+        this->dio.read();
+        return;
+    }
+    int i = 1;
+    this->dio.write("1");
+    this->dio.read();
+    for (string s : *results)
+    {
+
+        stringstream ss;
+        string message;
+        ss << i << " " << s;
+
+        message = ss.str();
+        this->dio.write(message);
+        this->dio.read();
+        i++;
+    }
+    this->dio.write("Done.");
+    this->dio.read();
+    return;
+}
+
+Command_download::Command_download(int *socket, vector<string> *results, multimap<vector<double>, string> *data)
+{
+    this->dsecription = "5. download results";
+    this->dio = SocketIO(socket);
+    this->results = results;
+    this->data = data;
+}
+
+void Command_download::execute()
+{
     if (data_empty())
     {
         this->dio.write("please upload data");
@@ -202,24 +257,31 @@ void Command_display::execute()
     {
         this->dio.write("please classify the data");
         this->dio.read();
+        return;
     }
+    this->dio.write("Please input a file path");
+    this->dio.read();
+
+    this->dio.write("ok");
+    this->dio.read();
     int i = 1;
     for (string s : *results)
     {
 
         stringstream ss;
-        string massage;
+        string message;
         ss << i << " " << s;
 
-        massage = ss.str();
-        this->dio.write(massage);
+        message = ss.str();
+        this->dio.write(message);
         this->dio.read();
         i++;
     }
     this->dio.write("Done.");
     this->dio.read();
-    return;
 }
+
+;
 
 Command_client_Upload::Command_client_Upload(int *socket)
 {
@@ -228,7 +290,7 @@ Command_client_Upload::Command_client_Upload(int *socket)
 
 void Command_client_Upload::execute()
 {
-    string *massage_recieved;
+    string *message_recieved;
     cout << this->dio.read() << endl;
     string path, upath;
     cin >> path;
@@ -248,21 +310,20 @@ void Command_Client_Settings ::execute()
 {
     cout << this->dio.read() << endl;
     cin.ignore();
-    string recieved_massage, massage;
-    getline(std::cin, massage);
+    string recieved_message, message;
+    getline(std::cin, message);
 
-    //  cout << massage << endl;
-    this->dio.write(massage);
-    recieved_massage = this->dio.read();
-    if (strcmp(recieved_massage.c_str(), "ignore") == 0)
+    //
+    this->dio.write(message);
+    recieved_message = this->dio.read();
+    if (strcmp(recieved_message.c_str(), "ignore") == 0)
     {
-        cout << " ignoring" << endl;
         return;
     }
 
-    if (recieved_massage.length() > 1)
+    if (recieved_message.length() > 1)
     {
-        cout << recieved_massage << endl;
+        cout << recieved_message << endl;
     }
     return;
 }
@@ -285,22 +346,76 @@ Command_Client_Display::Command_Client_Display(int *socket)
 
 void Command_Client_Display::execute()
 {
-    string massage_recieved;
-    massage_recieved = this->dio.read();
-    if (strcmp(massage_recieved.c_str(), "please upload data") == 0 || strcmp(massage_recieved.c_str(), "please classify the data") == 0)
+    string message_recieved;
+    message_recieved = this->dio.read();
+    if (strcmp(message_recieved.c_str(), "please upload data") == 0 || strcmp(message_recieved.c_str(), "please classify the data") == 0)
     {
-        cout << massage_recieved << endl;
+        cout << message_recieved << endl;
         this->dio.write("OK");
         return;
     }
+    this->dio.write("OK");
+    cout << "" << endl;
     while (true)
     {
-        massage_recieved = this->dio.read();
-        cout << massage_recieved << endl;
-        this->dio.write("OK");
-        if (strcmp(massage_recieved.c_str(), "Done.") == 0)
+        message_recieved = this->dio.read();
+        if (strcmp(message_recieved.c_str(), "Done.") == 0)
         {
+            this->dio.write("OK");
             return;
         }
+        cout << message_recieved << endl;
+        this->dio.write("ok");
     }
+}
+Command_Client_Download::Command_Client_Download(int *socket)
+{
+    this->dio = SocketIO(socket);
+}
+void Command_Client_Download::execute()
+{
+    string message_recieved;
+    message_recieved = this->dio.read();
+    if (strcmp(message_recieved.c_str(), "please upload data") == 0 || strcmp(message_recieved.c_str(), "please classify the data") == 0)
+    {
+        cout << message_recieved << endl;
+        cout << "" << endl; // used to stall the code, in order to keep things syncronized
+        this->dio.write("OK");
+        return;
+    }
+    cout << message_recieved << endl;
+
+    this->dio.write("ok");
+
+    cin.ignore();
+    getline(cin, file_path);
+    this->dio.write(file_path);
+    this->data_to_write << recieve_data().str();
+
+    pthread_t thread_o;
+    pthread_create(&thread_o, NULL, downloader, (void *)this);
+
+    return;
+}
+
+stringstream Command_Client_Download::recieve_data()
+{
+    stringstream ss;
+    while (true)
+    {
+        string message = dio.read();
+        if (strcmp(message.c_str(), "Done.") == 0)
+        {
+            this->dio.write("ok");
+            return ss;
+        }
+        ss << message << "\n";
+        this->dio.write("ok");
+    }
+}
+void Command_Client_Download::download_data()
+{
+    ofstream MyFile(this->file_path);
+    MyFile << this->data_to_write.str();
+    MyFile.close();
 }

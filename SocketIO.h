@@ -17,6 +17,6 @@ public:
     SocketIO() = default;
     SocketIO(int *socket);
     string read();
-    void write(string massage);
+    void write(string message);
 };
 #endif

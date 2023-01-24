@@ -11,7 +11,7 @@ class DefaultIO
 {
 public:
      string read();
-      void write(string massage) ;
+      void write(string message) ;
 };
 
 class SocketIO : public DefaultIO
@@ -22,6 +22,6 @@ private:
 public:
     SocketIO(int *socket);
     string read();
-    void write(string massage);
+    void write(string message);
 };
 #endif

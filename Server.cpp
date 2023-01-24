@@ -13,7 +13,20 @@
 
 using namespace std;
 
-/// @brief the function dissects the input of the client, finds and collects the data we need 
+void *handle_client(void *v)
+{
+    int client_sock = *((int *)v);
+    free(v);
+    CLI_Server cli_server = CLI_Server(&client_sock);
+    int client_on = 1;
+    while (client_on)
+    {
+        cli_server.print_menu();
+        cli_server.execute(&client_on);
+    }
+    return NULL;
+}
+/// @brief the function dissects the input of the client, finds and collects the data we need
 /// @param input string given by the user
 /// @param k a point to an int representing k, we'll change it accordingly
 /// @return {-1,-1} in case of an invalid input, {The k value the user inputs ,distance_algorithm chosen} in case of a valid input
@@ -24,14 +37,15 @@ pair<int, int> is_valid(string input, int *k, vector<string> &vect)
     int place = 0;
 
     // in case the input of the user is too short, it's an invalid input
-    if(vect.size() < 3){
-        return {-1,-1};
+    if (vect.size() < 3)
+    {
+        return {-1, -1};
     }
 
     string end = vect[vect.size() - 1];
     string dis_func = vect[vect.size() - 2];
 
-    // Checking if the last element in the input is a nubmer, if so we'll convert it to an int, 
+    // Checking if the last element in the input is a nubmer, if so we'll convert it to an int,
     // otherwise we shall return that the input is invalid
     if (!is_a_number(end))
     {
@@ -90,7 +104,7 @@ int main(int argc, char const *argv[])
 
     // using the function from the last exercise in order to
     // read the given file and map the data in it
-    //read_and_map(&data, file_name);
+    // read_and_map(&data, file_name);
 
     const int server_port = stoi(argv[2]);
     int sock = socket(AF_INET, SOCK_STREAM, 0); // Creating a socket to bind to
@@ -113,86 +127,25 @@ int main(int argc, char const *argv[])
     {
         perror("error listening to a socket");
     }
-    
+
     while (1)
     {
+
         string result;
         struct sockaddr_in client_sin;
         unsigned int addr_len = sizeof(client_sin);
+        pthread_t thread_o;
         int client_sock = accept(sock, (struct sockaddr *)&client_sin, &addr_len); // Accepting a new client
         if (client_sock < 0)
         {
             perror("error accepting client");
             continue;
         }
-        cout<<"Bfore" <<endl;
-        CLI_Server cli_server = CLI_Server(&client_sock);
-        
-        int clientOn = 1;
-        while (clientOn)
-        {
-           cli_server.print_menu();
-           cli_server.execute();
-           
-        
-   /*          int expected_data_len = sizeof(buffer);
-            memset(buffer, 0, expected_data_len); // Setting the buffer to 0's
-
-            int read_bytes = recv(client_sock, buffer, expected_data_len, 0); // Reciving a message from the client
-
-            if (read_bytes == 0)
-            {
-                cout << "Connection closed" << endl;
-            }
-            else if (read_bytes < 0)
-            {
-                cout << "Empty input" << endl;
-            }
-            else
-            {
-                if (!strcmp(buffer, "-1")) // If the message we recived is "-1". The client wants to close the connection
-                {
-                    result = "Bye"; // We shall return "Bye" to the client so it'll close it's connection
-                    clientOn = 0;
-                    goto send_to_client;
-                }
-                int *k;
-                vector<double> user_vector;
-                vector<string> user_string;
-                pair<int, int> place_and_distance = is_valid(buffer, k, user_string);
-                vector<string> vector_of_string;
-                
-                if (place_and_distance.first == -1) // If is_valid returned -1, it means the input is invalid
-                {
-                    result = "invalid input";
-                    goto send_to_client;
-                }
-                string buffer_string = buffer;
-                int vect_size = user_string.size() - 2;
-               
-                if (!assign_strings_to_doubles_with_size(user_string, user_vector, data.begin()->first.size(), vect_size))
-                {
-                    // if the function returned false, it's invalid input
-                    result = "invalid input";
-                    goto send_to_client;
-                }
-                result = Knn_classify(data.begin()->first.size(), data, user_vector, place_and_distance.second, place_and_distance.first);
-                strcpy(buffer, result.c_str()); */ /* */
-/*                 menu(client_sock);
-
-            }
-
-        // This label it used to send back a message to the client, we shall get here once we know what to send back
-        send_to_client:
-            strcpy(buffer, result.c_str());
-            int sent_bytes = send(client_sock, buffer, sizeof(buffer), 0); // Sending the result depending on the client's input to him
-            if (sent_bytes < 0)
-            {
-                perror("error sending to client");
-            }
-        } */
+        int *sclient = (int *)std::malloc(sizeof(int));
+        *sclient = client_sock; // storing the client's socket
+        pthread_create(&thread_o, NULL, handle_client, (void *)(sclient));
+      
     }
     close(sock);
     return 0;
-    }
 }

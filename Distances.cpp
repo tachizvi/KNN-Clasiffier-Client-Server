@@ -123,6 +123,6 @@ void runner(vector<double> a, vector<double> b)
         }
         // incase we're dealing with a double, it prints it with 15 digits after the decimal point
         std::cout.precision(15);
-        std::cout << (*i) << std::endl;
+      //  std::cout << (*i) << std::endl;
     }
 }

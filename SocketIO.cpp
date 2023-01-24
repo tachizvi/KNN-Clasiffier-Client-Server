@@ -28,9 +28,9 @@ string SocketIO::read()
     
     return buffer;
 }
-void SocketIO::write(string massage)
+void SocketIO::write(string message)
 {
-    int sent_bytes = send(*(this->socket), massage.c_str(), massage.length(), 0); // Sending the result depending on the client's input to him
+    int sent_bytes = send(*(this->socket), message.c_str(), message.length(), 0); // Sending the result depending on the client's input to him
     if (sent_bytes < 0)
     {
         perror("error sending to client");

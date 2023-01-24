@@ -12,16 +12,16 @@ using namespace std;
 class Command
 {
 protected:
-    string dsecription;
-    SocketIO dio;
-    multimap<vector<double>, string> real_data ;
-    vector<vector<double>> real_unclassified_data ;
-    multimap<vector<double>, string> *data = &real_data;
-    vector<vector<double>> *unclassified_data = & real_unclassified_data;
-    int *k;
-    string *distance_function;
-    vector<string> *results;
-    string *distance;
+     string dsecription;
+     SocketIO dio;
+     multimap<vector<double>, string> *data ;
+     vector<vector<double>> *unclassified_data ;
+     int *k;
+     string *distance_function;
+     vector<string> *results;
+     string *distance;
+     string client_path;
+     stringstream data_to_write;
 
 public:
     Command();
@@ -69,6 +69,12 @@ public:
     void execute() override;
 };
 
+class Command_download : public Command
+{
+public:
+    Command_download(int *socket, vector<string> *results, multimap<vector<double>, string> *data);
+    void execute() override;
+};
 class Command_client_Upload : public Command
 {
 public:
@@ -97,5 +103,15 @@ public:
     Command_Client_Display(int *socket);
 
     void execute() override;
+};
+
+class Command_Client_Download : public Command
+{
+    string file_path;
+public:
+    Command_Client_Download(int *socket);
+    void execute() override;
+    stringstream recieve_data();
+    void download_data();
 };
 #endif
