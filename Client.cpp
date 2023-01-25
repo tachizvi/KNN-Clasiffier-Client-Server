@@ -52,10 +52,13 @@ int main(int argc, char const *argv[])
     while (1)
     {
         cli.read_menu();
-        int user_pick;
+        string user_pick;
         std::cin >> user_pick;
-        
-        cli.exectue(user_pick);
+        int choice = atoi(user_pick.c_str());
+        if (choice == 8) {
+            break;
+        }
+        cli.exectue(choice);
     }
     cout << "Closing" << endl;
     close(sock);

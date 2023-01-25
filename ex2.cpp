@@ -90,7 +90,7 @@ pair<int,string> split_k_and_distance(string str, string delimiter) {
     }
     if (k < 1) {
         valid_k = false;
-        cout << "invalid value for K" << endl;
+        
     }
     if (!strcmp(distacne_metric.c_str(), "AUC") || !strcmp(distacne_metric.c_str(), "MIN")|| !strcmp(distacne_metric.c_str(), "MAN") || !strcmp(distacne_metric.c_str(), "CHB") || !strcmp(distacne_metric.c_str(), "CAN")) {
         if (valid_k) {
@@ -99,7 +99,7 @@ pair<int,string> split_k_and_distance(string str, string delimiter) {
         return {0," "};
     } else {
         if(valid_k) {
-        cout << "invalid value for metric" << endl;
+        
         return {-1, " "};
         } else {
             return {-2, " "};

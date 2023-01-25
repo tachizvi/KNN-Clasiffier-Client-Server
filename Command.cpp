@@ -75,12 +75,13 @@ bool Command::result_empty()
 {
     return this->results->empty();
 }
-Command_Upload::Command_Upload(int *socket, multimap<vector<double>, string> *data, vector<vector<double>> *unclassified_data)
+Command_Upload::Command_Upload(int *socket, multimap<vector<double>, string> *data, vector<vector<double>> *unclassified_data, vector<string> *results)
 {
     this->dsecription = "1. upload an unclassified csv data file";
     this->dio = SocketIO(socket);
     this->data = data;
     this->unclassified_data = unclassified_data;
+    this->results = results;
 }
 void Command_Upload::execute()
 {
@@ -124,6 +125,8 @@ void Command_Upload::execute()
     //*(this->data) = data_temp; // THE PROBLEM IS HERE
     //(this->unclassified_data) = &unclassified_data_temp; // FIX IT U FKING DIPSHIT
     copy_vector(unclassified_data_temp, this->unclassified_data);
+    if (!this->result_empty())
+        this->results->clear();
     return;
 }
 
@@ -198,7 +201,8 @@ void Command_classify::execute()
     if (data_empty())
     {
         this->dio.write("please upload data");
-        this->dio.write("classifying data complete");
+        //this->dio.write("classifying data complete");
+        return;
     }
     results->clear();
     for (vector<double> vect : *unclassified_data)
