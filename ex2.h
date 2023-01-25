@@ -26,7 +26,7 @@ pair<vector<double>,string> split_string(string str, string delimiter);
 /// @brief Opens and reads a given csv file and inserts the data to a given map
 /// @param data The destination map the method writes to
 /// @param file_name The name of the file it needs to read
-void read_and_map(multimap<vector<double>,string> *data, string file_name);
+bool read_and_map(multimap<vector<double>,string> *data, string file_name);
 
 /// @brief the function gets a line of doubles , assigns it as a vector and checks the size of it
 /// @param vect a vector to fill with the input
@@ -54,6 +54,6 @@ bool assign_strings_to_doubles(vector<string> &str, vector<double> &doub, int si
 
 bool assign_strings_to_doubles_with_size(vector<string> &str, vector<double> &doub, int size, int vect_size);
 
-void read_and_map_unclassified(vector<vector<double>> *unclassified_data, string file_name);
+bool read_and_map_unclassified(vector<vector<double>> *unclassified_data, string file_name);
 
 pair<int,string> split_k_and_distance(string str, string delimiter) ;

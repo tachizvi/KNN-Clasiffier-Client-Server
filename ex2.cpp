@@ -10,6 +10,15 @@
 
 using namespace std;
 
+bool isNumber(string s)
+{
+    for (int i = 0; i < s.length(); i++)
+        if (isdigit(s[i]) == false && s[i] != '.')
+            return false;
+
+    return true;
+}
+
 
 
  static map<string,int> Algorithms
@@ -46,7 +55,7 @@ pair<vector<double>,string> split_string(string str, string delimiter) {
     while (end != -1) { // loops until we don't have any more instances of the delimiter in string
         temp = str.substr(start, end - start);
         if (!is_a_number(temp) || temp.empty()) {
-            exit(1);
+             return {{0}, "ERROR"};
         }
         v.push_back(stod(temp));
         start = end + delimiter.size();
@@ -54,7 +63,7 @@ pair<vector<double>,string> split_string(string str, string delimiter) {
     }
     temp = str.substr(start, end);
         if (is_a_number(temp) || temp.empty()) {
-            exit(1);
+             return {{0}, "ERROR"};
         };
     return {v,temp};
 }
@@ -113,15 +122,19 @@ vector<double> split_string_doubles(string str, string delimiter) {
     while (end != -1) { // loops until we don't have any more instances of the delimiter in string
         temp = str.substr(start, end - start);
         if (!is_a_number(temp) || temp.empty()) {
+            return v;
         }
         v.push_back(stod(temp));
         start = end + delimiter.size();
         end = str.find(delimiter, start);
     }
     temp = str.substr(start, end);
-        if (!is_a_number(temp) || temp.empty()) {
-        };
-    v.push_back(stod(temp));
+    double d = atof(temp.c_str());
+    if (d == 0 && temp.compare(to_string(d)) != 0) {
+        v.clear();
+        return v;
+    }
+     v.push_back(d);
     return v;
 }
 
@@ -129,21 +142,32 @@ vector<double> split_string_doubles(string str, string delimiter) {
 /// @brief Opens and reads a given csv file and inserts the data to a given vector
 /// @param The destination map the method writes to
 /// @param file_name The name of the file it needs to read
-void read_and_map_unclassified(vector<vector<double>> *unclassified_data, string file_name) {
+bool read_and_map_unclassified(vector<vector<double>> *unclassified_data, string file_name) {
     ifstream fin; // initialize a stream
     string line;
     fin.open(file_name); // Open an existing file
+    int position = 0;
     // while there still lines to read, continue reading
      while(getline(fin, line)){  
     // inserts the pair returned from the "split_string" function to the map 
-            unclassified_data->push_back(split_string_doubles(line,","));
+            vector<double> v = split_string_doubles(line, ",");
+            if (v.size() == 0) {
+                return false;
             }
+            unclassified_data->push_back(v);
+            //unclassified_data[position] = split_string_doubles(line, ",");
+            
+            if(unclassified_data->begin()->size() == 0) {
+                return false;
+            }
+            }
+            return true;
 }
 
 /// @brief Opens and reads a given csv file and inserts the data to a given map
 /// @param data The destination map the method writes to
 /// @param file_name The name of the file it needs to read
-void read_and_map(multimap<vector<double>,string> *data, string file_name)
+bool read_and_map(multimap<vector<double>,string> *data, string file_name)
 {
     ifstream fin; // initialize a stream
     string line;
@@ -151,8 +175,13 @@ void read_and_map(multimap<vector<double>,string> *data, string file_name)
     // while there still lines to read, continue reading
      while(getline(fin, line)){  
     // inserts the pair returned from the "split_string" function to the map 
-            data->insert(split_string(line,","));
+    pair<vector<double>,string> temp_pair = split_string(line,",");
+    if (temp_pair.second.compare("ERROR") == 0) {
+        return false;
+    }
+            data->insert(temp_pair);
             }
+            return true;
     }
 
 /// @brief the function gets a line of doubles , assigns it as a vector and checks the size of it
