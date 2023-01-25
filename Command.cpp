@@ -9,6 +9,12 @@
 
 using namespace std;
 
+static bool is_vectors_same_size(vector<double> v1, vector<double> v2) {
+    if(v1.capacity() == v2.capacity()) 
+        return true;
+    return false;
+}
+
 void *downloader(void *args)
 {
     Command_Client_Download *cld = ((Command_Client_Download *)(args));
@@ -23,7 +29,6 @@ static void copy_vector(vector<vector<double>> src, vector<vector<double>> *dst)
 
     for (vector<double> v : src)
     {
-        print_vector(v);
         dst->push_back(v);
     }
 }
@@ -36,7 +41,6 @@ static void copy_vector(multimap<vector<double>, string> src, multimap<vector<do
     for (it = src.begin(); it != src.end(); it++)
     {
         vector<double> temp_vector = it->first;
-        print_vector(temp_vector);
         string temp_string = it->second;
 
         dst->insert({temp_vector, temp_string});
@@ -86,7 +90,10 @@ void Command_Upload::execute()
     string return_message = "Please upload your local train CSV file.";
     this->dio.write(return_message);
     classified = this->dio.read();
-    read_and_map(&data_temp, classified);
+    if(!read_and_map(&data_temp, classified)) {
+        this->dio.write("invalid input");
+        return;
+    }
     if (data_temp.size() == 0)
     {
         this->dio.write("invalid input");
@@ -95,10 +102,19 @@ void Command_Upload::execute()
     return_message = "Upload complete.\nPlease upload your local test CSV file.";
     this->dio.write(return_message);
     unclassified = this->dio.read();
-    read_and_map_unclassified(&unclassified_data_temp, unclassified);
+    if(!read_and_map_unclassified(&unclassified_data_temp, unclassified)) {
+        this->dio.write("invalid input");
+        return;
+    }
     if (unclassified_data_temp.size() == 0)
     {
         this->dio.write("invalid input");
+        return;
+    }
+    vector<double> classified_vector = data_temp.begin()->first;
+    vector<double> unClassified_vector = *unclassified_data_temp.begin();
+    if (!is_vectors_same_size(classified_vector, unClassified_vector)) {
+         this->dio.write("invalid input");
         return;
     }
     this->dio.write("upload complete.");
@@ -184,6 +200,7 @@ void Command_classify::execute()
         this->dio.write("please upload data");
         this->dio.write("classifying data complete");
     }
+    results->clear();
     for (vector<double> vect : *unclassified_data)
     {
         results->push_back(Knn_classify((data)->begin()->first.size(), *data, vect, Algorithms[*distance], *k));
@@ -290,15 +307,19 @@ Command_client_Upload::Command_client_Upload(int *socket)
 
 void Command_client_Upload::execute()
 {
-    string *message_recieved;
+    string message_recieved;
     cout << this->dio.read() << endl;
     string path, upath;
     cin >> path;
     this->dio.write(path);
-    cout << this->dio.read() << endl;
+    message_recieved = this->dio.read();
+    cout << message_recieved << endl;
+    if(message_recieved.compare("invalid input") == 0) {
+        return;
+    }
     cin >> upath;
     this->dio.write(upath);
-    this->dio.read();
+    cout << this->dio.read() << endl;
     return;
 }
 

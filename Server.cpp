@@ -106,7 +106,7 @@ int main(int argc, char const *argv[])
     // read the given file and map the data in it
     // read_and_map(&data, file_name);
 
-    const int server_port = stoi(argv[2]);
+    const int server_port = stoi(argv[1]);
     int sock = socket(AF_INET, SOCK_STREAM, 0); // Creating a socket to bind to
     if (sock < 0)
     {
