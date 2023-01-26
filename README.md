@@ -1,4 +1,4 @@
-# This repository contains our third assignment in the 'Advanced programming' course
+# This repository contains our fourth assignment in the 'Advanced programming' course
 
 ## We were told to create the following program:
 ### The program shall set up a server and client(s), then after assuring the two connected successfully, they will be connected in a new thread ans start  their work together. The server sends a menu to the client and the client need to respond his choice, then the server make the order.
