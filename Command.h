@@ -36,7 +36,7 @@ class Command_Upload : public Command
 {
 
 public:
-    Command_Upload(int *socket, multimap<vector<double>, string> *data, vector<vector<double>> *unclassified_data);
+    Command_Upload(int *socket, multimap<vector<double>, string> *data, vector<vector<double>> *unclassified_data, vector<string> *results);
     void execute();
 };
 

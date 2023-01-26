@@ -15,7 +15,7 @@ CLI_Server::CLI_Server(int *socket)
     this->results = {};
 
     this->distance_function = "AUC";
-    this->commands[0] = (new Command_Upload(this->socket, &this->data, &this->unclassified_data));
+    this->commands[0] = (new Command_Upload(this->socket, &this->data, &this->unclassified_data, &this->results));
     this->commands[1] = new Command_settings(this->socket, &this->k, &this->distance_function);
     this->commands[2] = new Command_classify(this->socket, &this->k, &this->distance_function, &this->data, &this->unclassified_data, &this->results);
     this->commands[3] = new Command_display(this->socket, &this->results, &this->data);
@@ -32,8 +32,11 @@ void CLI_Server::execute(int* client_on)
         return;
     }
     int user_pick_s = stoi(mes);
+    if (user_pick_s >=1 && user_pick_s <= 5) {
     (this->commands)[user_pick_s - 1]->execute();
     this->dio.read();
+    }
+
 }
 
 void CLI_Server::print_menu()
@@ -44,6 +47,7 @@ void CLI_Server::print_menu()
         ss << "\n" << commands[i]->get_description();
         
     }
+    ss << "\n" << "8. exit";
     string message = ss.str();
     this->dio.write(message);
     // this->dio.read();
@@ -63,6 +67,8 @@ bool CLI_Client::exectue(int user_pick)
 {
     if (user_pick < 1 || user_pick > 5)
     {
+        cout << "invalid option" << endl;
+        this->dio.write("0");
         return false;
     }
     this->dio.write(to_string(user_pick));
